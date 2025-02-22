@@ -3,11 +3,11 @@ from flask import Flask, render_template, request, session, jsonify
 import requests
 import json
 
-# Tạo Flask app và chỉ định thư mục templates (lưu ý: file này nằm trong thư mục api)
+# Tạo Flask app với thư mục templates (lưu ý: file này nằm trong thư mục api)
 app = Flask(__name__, template_folder="../templates")
 app.secret_key = os.environ.get("SECRET_KEY", "default_secret_key")
 
-# Lấy API key từ biến môi trường; nếu chưa được thiết lập, sẽ báo lỗi.
+# Lấy API key từ biến môi trường; nếu chưa có, báo lỗi.
 API_KEY = os.environ.get("API_KEY")
 if not API_KEY:
     raise Exception("API_KEY is not set in environment variables")
@@ -50,7 +50,6 @@ def index():
     # Nếu chưa chọn mô hình, đặt mặc định là Qwen Turbo
     if "model" not in session:
         session["model"] = "qwen"
-    # Khởi tạo lịch sử hội thoại nếu chưa có
     if "history" not in session:
         session["history"] = []
     return render_template("index.html", models=MODELS, current_model=MODELS[session["model"]]["name"])
@@ -92,25 +91,15 @@ def chat():
     response = requests.post(API_URL, headers=headers, json=payload)
     
     if response.status_code == 200:
-        # Kiểm tra header Content-Type
-        content_type = response.headers.get("Content-Type", "")
-        if "application/json" not in content_type:
-            print("Response not JSON. Body:", response.text)
-            return jsonify({
-                "error": "Server did not return JSON",
-                "details": response.text
-            }), 500
-
+        # Thử parse JSON; nếu lỗi, lấy raw text
         try:
             result = response.json()
+            reply = result.get("choices", [{}])[0].get("message", {}).get("content", "No reply.")
         except json.JSONDecodeError:
-            print("JSONDecodeError. Body:", response.text)
-            return jsonify({
-                "error": "Invalid JSON returned by API",
-                "details": response.text
-            }), 500
+            # Nếu không parse được, ta lấy raw text (dành cho DeepSeek khi trả về lỗi dạng text)
+            print("JSONDecodeError. Response text:", response.text)
+            reply = response.text
 
-        reply = result.get("choices", [{}])[0].get("message", {}).get("content", "No reply.")
         history.append({"role": "assistant", "content": reply})
         session["history"] = history
 
@@ -127,8 +116,8 @@ def chat():
     else:
         print("API Error:", response.status_code, response.text)
         return jsonify({
-            "error": "API error",
-            "status_code": response.status_code,
+            "error": "API error", 
+            "status_code": response.status_code, 
             "details": response.text
         }), 500
 
