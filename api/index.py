@@ -3,14 +3,17 @@ from flask import Flask, render_template, request, session, jsonify
 import requests
 import json
 
+# Tạo Flask app và chỉ định thư mục templates
 app = Flask(__name__, template_folder="../templates")
 app.secret_key = os.environ.get("SECRET_KEY", "default_secret_key")
 
+# Lấy API key từ biến môi trường (không nên hard-code)
 API_KEY = os.environ.get("API_KEY")
 if not API_KEY:
     raise Exception("API_KEY is not set in environment variables")
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
+# Cấu hình các mô hình chatbot
 MODELS = {
     "qwen": {
          "name": "Qwen Turbo",
@@ -44,8 +47,10 @@ MODELS = {
 
 @app.route('/')
 def index():
+    # Nếu chưa chọn mô hình, đặt mặc định là Qwen Turbo
     if "model" not in session:
         session["model"] = "qwen"
+    # Khởi tạo lịch sử hội thoại nếu chưa có
     if "history" not in session:
         session["history"] = []
     return render_template("index.html", models=MODELS, current_model=MODELS[session["model"]]["name"])
@@ -55,7 +60,7 @@ def set_model():
     model = request.form.get("model")
     if model in MODELS:
         session["model"] = model
-        session["history"] = []
+        session["history"] = []  # Xoá lịch sử khi chuyển mô hình
         return jsonify({"status": "success", "model": model, "model_name": MODELS[model]["name"]})
     return jsonify({"status": "error", "message": "Model not found"}), 400
 
@@ -87,23 +92,28 @@ def chat():
     response = requests.post(API_URL, headers=headers, json=payload)
 
     if response.status_code == 200:
-        # Thử parse JSON. Nếu server trả về chuỗi không phải JSON, ta sẽ bắt ngoại lệ.
-        try:
-            result = response.json()
-        except json.JSONDecodeError:
-            # Server trả về nội dung không phải JSON => in log để kiểm tra
-            print("Server returned invalid JSON. Body:", response.text)
+        # Nếu header không chứa 'application/json', trả về lỗi JSON
+        content_type = response.headers.get("Content-Type", "")
+        if "application/json" not in content_type:
+            print("Response not JSON. Body:", response.text)
             return jsonify({
-                "error": "Server returned invalid JSON instead of expected result",
+                "error": "Server did not return JSON",
                 "details": response.text
             }), 500
 
-        # Tiếp tục parse bình thường
+        try:
+            result = response.json()
+        except json.JSONDecodeError:
+            print("JSONDecodeError. Body:", response.text)
+            return jsonify({
+                "error": "Invalid JSON returned by API",
+                "details": response.text
+            }), 500
+
         reply = result.get("choices", [{}])[0].get("message", {}).get("content", "No reply.")
         history.append({"role": "assistant", "content": reply})
         session["history"] = history
 
-        # Nếu dùng mô hình DeepSeek, tách suy luận và trả lời chính
         if selected_model_key in ["deepseek_free", "deepseek_hf"]:
             if "Final Answer:" in reply:
                 reasoning, final_answer = reply.split("Final Answer:", 1)
@@ -115,7 +125,6 @@ def chat():
             
         return jsonify(reply_data)
     else:
-        # Mã status khác 200 => in log, trả về error
         print("API Error:", response.status_code, response.text)
         return jsonify({
             "error": "API error", 
