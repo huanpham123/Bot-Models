@@ -3,11 +3,11 @@ from flask import Flask, render_template, request, session, jsonify
 import requests
 import json
 
-# Tạo Flask app và chỉ định thư mục templates
+# Tạo Flask app và chỉ định thư mục templates (lưu ý: file này nằm trong thư mục api)
 app = Flask(__name__, template_folder="../templates")
 app.secret_key = os.environ.get("SECRET_KEY", "default_secret_key")
 
-# Lấy API key từ biến môi trường (không nên hard-code)
+# Lấy API key từ biến môi trường; nếu chưa được thiết lập, sẽ báo lỗi.
 API_KEY = os.environ.get("API_KEY")
 if not API_KEY:
     raise Exception("API_KEY is not set in environment variables")
@@ -90,9 +90,9 @@ def chat():
     }
     
     response = requests.post(API_URL, headers=headers, json=payload)
-
+    
     if response.status_code == 200:
-        # Nếu header không chứa 'application/json', trả về lỗi JSON
+        # Kiểm tra header Content-Type
         content_type = response.headers.get("Content-Type", "")
         if "application/json" not in content_type:
             print("Response not JSON. Body:", response.text)
@@ -127,8 +127,8 @@ def chat():
     else:
         print("API Error:", response.status_code, response.text)
         return jsonify({
-            "error": "API error", 
-            "status_code": response.status_code, 
+            "error": "API error",
+            "status_code": response.status_code,
             "details": response.text
         }), 500
 
