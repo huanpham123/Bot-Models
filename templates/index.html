@@ -14,7 +14,7 @@
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet">
   
   <style>
-    /* Reset & cơ bản */
+    /* Reset & cấu hình cơ bản */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Roboto', sans-serif;
@@ -57,11 +57,12 @@
       83% { color: indigo; }
       100% { color: violet; }
     }
+    /* Model Menu */
     .model-menu {
       position: absolute;
       top: 20px;
       left: 20px;
-      background: rgba(255,255,255,0.15);
+      background: rgba(255, 255, 255, 0.15);
       padding: 8px 12px;
       border-radius: 8px;
       cursor: pointer;
@@ -69,7 +70,7 @@
     }
     .model-menu:hover {
       transform: scale(1.05);
-      background: rgba(255,255,255,0.25);
+      background: rgba(255, 255, 255, 0.25);
     }
     .menu-list {
       display: none;
@@ -84,14 +85,18 @@
       z-index: 10;
       opacity: 1;
     }
-    .menu-list.active { display: block; }
+    .menu-list.active {
+      display: block;
+    }
     .menu-list div {
       padding: 10px;
       cursor: pointer;
       transition: background 0.2s ease;
       animation: rainbow 3s linear infinite;
     }
-    .menu-list div:hover { background: #0f3460; }
+    .menu-list div:hover {
+      background: #0f3460;
+    }
     @keyframes rainbow {
       0% { color: red; }
       16% { color: orange; }
@@ -134,21 +139,33 @@
       cursor: pointer;
       transition: background 0.3s ease;
     }
-    .input-area button:hover { background: #187bcd; }
+    .input-area button:hover {
+      background: #187bcd;
+    }
     .message {
       margin-bottom: 15px;
       animation: fadeIn 0.3s ease;
     }
-    .message.user { text-align: right; }
-    .message.assistant { text-align: left; }
+    .message.user {
+      text-align: right;
+    }
+    .message.assistant {
+      text-align: left;
+    }
     .message p {
       display: inline-block;
       padding: 12px;
       border-radius: 8px;
       max-width: 75%;
     }
-    .message.user p { background: #1e90ff; color: #fff; }
-    .message.assistant p { background: #eaeaea; color: #333; }
+    .message.user p {
+      background: #1e90ff;
+      color: #fff;
+    }
+    .message.assistant p {
+      background: #eaeaea;
+      color: #333;
+    }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
@@ -205,8 +222,8 @@
       const msgDiv = document.createElement("div");
       msgDiv.classList.add("message", role);
       const p = document.createElement("p");
-      if (subtype === "reasoning") { p.classList.add("reasoning-box"); }
-      else if (subtype === "final") { p.classList.add("final-answer"); }
+      if(subtype === "reasoning"){ p.classList.add("reasoning-box"); }
+      else if(subtype === "final"){ p.classList.add("final-answer"); }
       p.textContent = text;
       msgDiv.appendChild(p);
       chatArea.appendChild(msgDiv);
@@ -226,13 +243,13 @@
     
     function removeLoading() {
       const loadingDiv = document.getElementById("loading-indicator");
-      if (loadingDiv) { loadingDiv.remove(); }
+      if(loadingDiv) { loadingDiv.remove(); }
     }
     
     function sendMessage() {
       const input = document.getElementById("user-input");
       const message = input.value.trim();
-      if (message === "") return;
+      if(message === "") return;
       appendMessage("user", message);
       input.value = "";
       showLoading();
@@ -245,14 +262,14 @@
       .then(response => response.json())
       .then(data => {
         removeLoading();
-        if (data.final_answer) {
-          if (data.reasoning) {
+        if(data.final_answer) {
+          if(data.reasoning) {
             appendMessage("assistant", data.reasoning, "reasoning");
             appendMessage("assistant", data.final_answer, "final");
           } else {
             appendMessage("assistant", data.final_answer);
           }
-        } else if (data.error) {
+        } else if(data.error) {
           appendMessage("assistant", "Error: " + data.error);
         }
       })
@@ -270,7 +287,7 @@
       })
       .then(response => response.json())
       .then(data => {
-        if (data.status === "success") {
+        if(data.status === "success") {
           document.getElementById("current-model").textContent = data.model_name;
           document.getElementById("chat-area").innerHTML = "";
           document.getElementById("menu-list").classList.remove("active");
