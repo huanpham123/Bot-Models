@@ -3,17 +3,15 @@ from flask import Flask, render_template, request, session, jsonify
 import requests
 import json
 
-# Tạo Flask app với thư mục templates (lưu ý: file này nằm trong thư mục api)
 app = Flask(__name__, template_folder="../templates")
 app.secret_key = os.environ.get("SECRET_KEY", "default_secret_key")
+app.config['SESSION_COOKIE_SAMESITE'] = "Lax"
 
-# Lấy API key từ biến môi trường; nếu chưa có, báo lỗi.
 API_KEY = os.environ.get("API_KEY")
 if not API_KEY:
     raise Exception("API_KEY is not set in environment variables")
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
-# Cấu hình các mô hình chatbot
 MODELS = {
     "qwen": {
          "name": "Qwen Turbo",
@@ -47,79 +45,87 @@ MODELS = {
 
 @app.route('/')
 def index():
-    # Nếu chưa chọn mô hình, đặt mặc định là Qwen Turbo
-    if "model" not in session:
-        session["model"] = "qwen"
-    if "history" not in session:
-        session["history"] = []
-    return render_template("index.html", models=MODELS, current_model=MODELS[session["model"]]["name"])
+    session.setdefault("model", "qwen")
+    session.setdefault("history", [])
+    return render_template("index.html", 
+                         models=MODELS,
+                         current_model=MODELS[session["model"]]["name"])
 
 @app.route('/set_model', methods=['POST'])
 def set_model():
     model = request.form.get("model")
     if model in MODELS:
         session["model"] = model
-        session["history"] = []  # Xoá lịch sử khi chuyển mô hình
-        return jsonify({"status": "success", "model": model, "model_name": MODELS[model]["name"]})
+        session["history"] = []
+        return jsonify({
+            "status": "success", 
+            "model": model, 
+            "model_name": MODELS[model]["name"]
+        })
     return jsonify({"status": "error", "message": "Model not found"}), 400
 
 @app.route('/chat', methods=['POST'])
 def chat():
-    user_message = request.json.get("message")
-    if not user_message:
-        return jsonify({"error": "No message provided"}), 400
+    try:
+        data = request.get_json()
+        user_message = data.get("message")
+        if not user_message:
+            return jsonify({"error": "No message provided"}), 400
 
-    history = session.get("history", [])
-    history.append({"role": "user", "content": user_message})
+        history = session.get("history", [])
+        history.append({"role": "user", "content": user_message})
 
-    selected_model_key = session.get("model", "qwen")
-    model_info = MODELS.get(selected_model_key)
-    if not model_info:
-        return jsonify({"error": "Invalid model selected"}), 400
+        model_key = session.get("model", "qwen")
+        model_info = MODELS.get(model_key)
+        if not model_info:
+            return jsonify({"error": "Invalid model selected"}), 400
 
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {API_KEY}"
-    }
-    headers.update(model_info.get("extra_headers", {}))
-    
-    payload = {
-        "model": model_info["api_model"],
-        "messages": history
-    }
-    
-    response = requests.post(API_URL, headers=headers, json=payload)
-    
-    if response.status_code == 200:
-        # Thử parse JSON; nếu lỗi, lấy raw text
-        try:
-            result = response.json()
-            reply = result.get("choices", [{}])[0].get("message", {}).get("content", "No reply.")
-        except json.JSONDecodeError:
-            # Nếu không parse được, ta lấy raw text (dành cho DeepSeek khi trả về lỗi dạng text)
-            print("JSONDecodeError. Response text:", response.text)
-            reply = response.text
+        headers = {
+            "Authorization": f"Bearer {API_KEY}",
+            **model_info["extra_headers"]
+        }
+        payload = {
+            "model": model_info["api_model"],
+            "messages": history
+        }
 
+        response = requests.post(API_URL, json=payload, headers=headers)
+        response.raise_for_status()
+
+        result = response.json()
+        reply = result["choices"][0]["message"]["content"]
         history.append({"role": "assistant", "content": reply})
         session["history"] = history
 
-        if selected_model_key in ["deepseek_free", "deepseek_hf"]:
+        # Xử lý định dạng đặc biệt cho DeepSeek
+        if model_key in ["deepseek_free", "deepseek_hf"]:
             if "Final Answer:" in reply:
-                reasoning, final_answer = reply.split("Final Answer:", 1)
-                reply_data = {"reasoning": reasoning.strip(), "final_answer": final_answer.strip()}
+                reasoning, final = reply.split("Final Answer:", 1)
+                reply_data = {
+                    "reasoning": reasoning.strip(),
+                    "final_answer": final.strip()
+                }
             else:
-                reply_data = {"final_answer": reply}
+                reply_data = {
+                    "reasoning": "",
+                    "final_answer": reply.strip()
+                }
         else:
-            reply_data = {"final_answer": reply}
-            
+            reply_data = {
+                "reasoning": "",
+                "final_answer": reply
+            }
+
         return jsonify(reply_data)
-    else:
-        print("API Error:", response.status_code, response.text)
-        return jsonify({
-            "error": "API error", 
-            "status_code": response.status_code, 
-            "details": response.text
-        }), 500
+
+    except requests.exceptions.HTTPError as err:
+        try:
+            error_msg = response.json().get("error", {}).get("message", response.text)
+        except:
+            error_msg = f"{err}: {response.text[:200]}" if response else str(err)
+        return jsonify({"error": error_msg}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
