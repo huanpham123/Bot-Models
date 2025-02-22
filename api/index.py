@@ -3,12 +3,14 @@ from flask import Flask, render_template, request, session, jsonify
 import requests
 import json
 
-# Tạo Flask app với thư mục templates được chỉ định
-app = Flask(__name__, template_folder="templates")
-app.secret_key = os.environ.get("SECRET_KEY", "huankk123@@")
+# Tạo Flask app, chỉ định thư mục templates
+app = Flask(__name__, template_folder="../templates")
+app.secret_key = os.environ.get("SECRET_KEY", "default_secret_key")  # Lấy từ biến môi trường
 
-# Lấy API key từ biến môi trường, nếu không có sẽ dùng fallback API key mới của bạn
-API_KEY = os.environ.get("API_KEY", "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")
+# Lấy API key từ biến môi trường (API_KEY không được hard-code)
+API_KEY = os.environ.get("API_KEY")
+if not API_KEY:
+    raise Exception("API_KEY is not set in environment variables")
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 # Cấu hình các mô hình chatbot
@@ -94,7 +96,7 @@ def chat():
         history.append({"role": "assistant", "content": reply})
         session["history"] = history
 
-        # Nếu dùng mô hình DeepSeek, tách phần suy luận và trả lời chính (dựa trên từ khóa "Final Answer:")
+        # Nếu dùng mô hình DeepSeek, tách phần suy luận và trả lời chính dựa trên từ khóa "Final Answer:"
         if selected_model_key in ["deepseek_free", "deepseek_hf"]:
             if "Final Answer:" in reply:
                 reasoning, final_answer = reply.split("Final Answer:", 1)
@@ -106,7 +108,6 @@ def chat():
             
         return jsonify(reply_data)
     else:
-        # In log lỗi để kiểm tra trong Vercel logs
         print("API Error:", response.status_code, response.text)
         return jsonify({
             "error": "API error", 
