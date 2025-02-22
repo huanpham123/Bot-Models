@@ -6,11 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>BOT-FIVE-MODELS</title>
   
-  <!-- Favicon cỏ 4 lá -->
+  <!-- Favicon cỏ 4 lá (Four-leaf clover) màu xanh lá -->
   <link rel="icon" type="image/svg+xml" 
-    href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjMmVjYzcxIiBkPSJNMzcwLjIgNjcuNmMtMjQuMSAwLTQ2LjUgOS40LTYzLjYgMjYuNWwtNDIuMSA0Mi4xYy00LjUgNC41LTEwLjYgNy0xNyA3cy0xMi41LTIuNS0xNy03bC00Mi4xLTQyLjFjLTE3LjEtMTcuMS0zOS41LTI2LjUtNjMuNi0yNi41LTQ5LjYgMC05MCA0MC40LTkwIDkwIDAgMjQuMSA5LjQgNDYuNSAyNi41IDYzLjZsNDIuMSA0Mi4xYyA0LjUgNC41IDcgMTAuNiA3IDE3cy0yLjUgMTIuNS03IDE3bC00Mi4xIDQyLjFjLTE3LjEgMTcuMS0yNi41IDM5LjUtMjYuNSA2My42IDAgNDkuNiA0MC40IDkwIDkwIDkwIDI0LjEgMCA0Ni41LTkuNCA2My42LTI2LjVsNDIuMS00Mi4xYzQuNS00LjUgMTAuNi03IDE3LTdzMTIuNSAyLjUgMTcgN2w0Mi4xIDQyLjFjMTcuMS0xNy4xIDI2LjUtMzkuNSAyNi41LTYzLjYtLjEtNDkuNi00MC41LTkwLTkwLjEtOTB6Ii8+PC9zdmc+">
+    href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjMmVjYzcxIiBkPSJNMzcwLjIgNjcuNmMtMjQuMSAwLTQ2LjUgOS40LTYzLjYgMjYuNWwtNDIuMSA0Mi4xYy00LjUgNC41LTEwLjYgNy0xNyA3cy0xMi41LTIuNS0xNy03bC00Mi4xLTQyLjFjLTE3LjEtMTcuMS0zOS41LTI2LjUtNjMuNi0yNi41LTQ5LjYgMC05MCA0MC40LTkwIDkwIDAgMjQuMSA5LjQgNDYuNSAyNi41IDYzLjZsNDIuMSA0Mi4xYyA0LjUgNC41IDcgMTAuNiA3IDE3cy0yLjUgMTIuNS03IDE3bC00Mi4xIDQyLjFjLTE3LjEgMTcuMS0yNi41IDM5LjUtMjYuNSA2My42IDAgNDkuNiA0MC40IDkwIDkwIDkwIDI0LjEgMCA0Ni41LTkuNCA2My42LTI2LjVsNDIuMS00Mi4xYzQuNS00LjUgMTAuNi03IDE3LTdzMTIuNSAyLjUgMTcgN2w0Mi4xIDQyLjFjMTcuMSAxNy4xIDM5LjUgMjYuNSA2My42IDI2LjUgNDkuNiAwIDkwLTQwLjQgOTAtOTAgMC0yNC4xLTkuNC00Ni41LTI2LjUtNjMuNmwtNDIuMS00Mi4xYy00LjUtNC41LTctMTAuNi03LTE3cy41LTEyLjUgNy0xN2w0Mi4xLTQyLjFjMTcuMS0xNy4xIDI2LjUtMzkuNSAyNi41LTYzLjYtLjEtNDkuNi00MC41LTkwLTkwLjEtOTB6Ii8+PC9zdmc+" />
   
-  <!-- Google Fonts -->
+  <!-- Google Fonts cho giao diện hiện đại -->
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet">
   
   <style>
@@ -25,6 +25,7 @@
       align-items: center;
       min-height: 100vh;
     }
+    /* Container chiếm 90% chiều cao màn hình */
     .container {
       width: 90%;
       max-width: 800px;
@@ -43,6 +44,7 @@
       text-align: center;
       color: #fff;
     }
+    /* Hiệu ứng cầu vồng cho chữ BOT-FIVE-MODELS */
     .rainbow-text {
       font-size: 1.8rem;
       font-weight: 500;
@@ -57,6 +59,7 @@
       83% { color: indigo; }
       100% { color: violet; }
     }
+
     /* Model Menu */
     .model-menu {
       position: absolute;
@@ -106,6 +109,7 @@
       83% { color: indigo; }
       100% { color: violet; }
     }
+    /* Chat Area tự điều chỉnh theo chiều cao container */
     .chat-area {
       flex: 1;
       padding: 20px;
@@ -166,10 +170,50 @@
       background: #eaeaea;
       color: #333;
     }
+    /* DeepSeek special styles */
+    .reasoning-box {
+      background: rgba(255,255,255,0.1);
+      border-left: 4px solid #0f3460;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+      border-radius: 8px;
+    }
+    .final-answer {
+      background: rgba(30,144,255,0.2);
+      border: 2px solid #1e90ff;
+      padding: 12px;
+      font-weight: 700;
+      color: #fff;
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+    /* Loading indicator (animated ellipsis) */
+    .loading-indicator {
+      display: inline-block;
+      width: 50px;
+      text-align: left;
+    }
+    .loading-indicator span {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      margin: 0 2px;
+      background: #eaeaea;
+      border-radius: 50%;
+      animation: bounce 1.4s infinite ease-in-out both;
+    }
+    .loading-indicator span:nth-child(1) { animation-delay: -0.32s; }
+    .loading-indicator span:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0); } 
+      40% { transform: scale(1); }
+    }
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
+      from { opacity: 0; transform: translateY(10px); } 
       to { opacity: 1; transform: translateY(0); }
     }
+    /* Responsive */
     @media (max-width: 600px) {
       .container { margin: 10px; }
       .header h2 { font-size: 1.5rem; }
@@ -180,7 +224,9 @@
 </head>
 <body>
   <div class="container">
+    <!-- Header -->
     <div class="header">
+      <!-- Menu chọn model -->
       <div class="model-menu" id="model-menu">
         Model: <span id="current-model">{{ current_model }}</span>
         <div class="menu-list" id="menu-list">
@@ -189,13 +235,16 @@
           {% endfor %}
         </div>
       </div>
+      <!-- Thêm lớp rainbow-text vào <h2> -->
       <h2 class="rainbow-text">BOT-FIVE-MODELS</h2>
     </div>
     
+    <!-- Khu vực chat -->
     <div class="chat-area" id="chat-area">
       <!-- Tin nhắn sẽ hiển thị tại đây -->
     </div>
     
+    <!-- Khu vực nhập tin nhắn -->
     <div class="input-area">
       <input type="text" id="user-input" placeholder="Type your message..." autocomplete="off" />
       <button onclick="sendMessage()">Gửi</button>
@@ -203,33 +252,43 @@
   </div>
   
   <script>
+    // Toggle hiển thị menu khi nhấn vào model-menu
     const modelMenu = document.getElementById("model-menu");
     const menuList = document.getElementById("menu-list");
     let menuOpen = false;
     modelMenu.addEventListener("click", (e) => {
-      e.stopPropagation();
+      e.stopPropagation(); // Ngăn click lan ra ngoài
       menuOpen = !menuOpen;
-      if (menuOpen) { menuList.classList.add("active"); }
-      else { menuList.classList.remove("active"); }
+      if (menuOpen) {
+        menuList.classList.add("active");
+      } else {
+        menuList.classList.remove("active");
+      }
     });
+    // Ẩn menu khi click ra ngoài vùng menu
     document.addEventListener("click", () => {
       menuList.classList.remove("active");
       menuOpen = false;
     });
     
+    // Hàm thêm tin nhắn vào chat area
     function appendMessage(role, text, subtype = null) {
       const chatArea = document.getElementById("chat-area");
       const msgDiv = document.createElement("div");
       msgDiv.classList.add("message", role);
       const p = document.createElement("p");
-      if(subtype === "reasoning"){ p.classList.add("reasoning-box"); }
-      else if(subtype === "final"){ p.classList.add("final-answer"); }
+      if(subtype === "reasoning"){
+        p.classList.add("reasoning-box");
+      } else if(subtype === "final"){
+        p.classList.add("final-answer");
+      }
       p.textContent = text;
       msgDiv.appendChild(p);
       chatArea.appendChild(msgDiv);
       chatArea.scrollTop = chatArea.scrollHeight;
     }
     
+    // Hiển thị biểu tượng loading (dấu ... chuyển động)
     function showLoading() {
       const chatArea = document.getElementById("chat-area");
       const loadingDiv = document.createElement("div");
@@ -241,17 +300,21 @@
       chatArea.scrollTop = chatArea.scrollHeight;
     }
     
+    // Xoá biểu tượng loading
     function removeLoading() {
       const loadingDiv = document.getElementById("loading-indicator");
       if(loadingDiv) { loadingDiv.remove(); }
     }
     
+    // Gửi tin nhắn lên server
     function sendMessage() {
       const input = document.getElementById("user-input");
       const message = input.value.trim();
       if(message === "") return;
+      // Thêm tin nhắn user vào khung chat
       appendMessage("user", message);
       input.value = "";
+      // Hiển thị biểu tượng loading
       showLoading();
       
       fetch("/chat", {
@@ -261,8 +324,10 @@
       })
       .then(response => response.json())
       .then(data => {
+        // Xoá biểu tượng loading
         removeLoading();
         if(data.final_answer) {
+          // Trường hợp DeepSeek tách reasoning / final_answer
           if(data.reasoning) {
             appendMessage("assistant", data.reasoning, "reasoning");
             appendMessage("assistant", data.final_answer, "final");
@@ -279,6 +344,7 @@
       });
     }
     
+    // Đổi mô hình khi click vào menu (vẫn hiển thị menu cho đến khi chọn)
     function setModel(modelKey) {
       fetch("/set_model", {
         method: "POST",
@@ -290,6 +356,7 @@
         if(data.status === "success") {
           document.getElementById("current-model").textContent = data.model_name;
           document.getElementById("chat-area").innerHTML = "";
+          // Ẩn menu sau khi chọn
           document.getElementById("menu-list").classList.remove("active");
           menuOpen = false;
         }
