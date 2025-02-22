@@ -1,268 +1,301 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chat - Multi Model</title>
-    <style>
-        :root {
-            --primary: #2ecc71;
-            --error: #e74c3c;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #1a1a2e;
-            color: #fff;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 800px;
-            height: 90vh;
-            background: #16213e;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #0f3460, #1e90ff);
-            padding: 1rem;
-            position: relative;
-        }
-
-        .model-selector {
-            position: absolute;
-            top: 1rem;
-            left: 1rem;
-            background: rgba(255,255,255,0.1);
-            border-radius: 8px;
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .model-selector:hover {
-            background: rgba(255,255,255,0.2);
-        }
-
-        .model-selector select {
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 1rem;
-            cursor: pointer;
-        }
-
-        .chat-area {
-            flex: 1;
-            padding: 1rem;
-            overflow-y: auto;
-            background: #0f3460;
-        }
-
-        .message {
-            margin: 0.8rem 0;
-            animation: fadeIn 0.3s;
-        }
-
-        .message.user {
-            text-align: right;
-        }
-
-        .message p {
-            display: inline-block;
-            padding: 0.8rem 1.2rem;
-            border-radius: 15px;
-            max-width: 80%;
-            word-break: break-word;
-        }
-
-        .user p {
-            background: #1e90ff;
-            color: #fff;
-        }
-
-        .assistant p {
-            background: #fff;
-            color: #333;
-        }
-
-        .reasoning {
-            background: rgba(46, 204, 113, 0.1) !important;
-            border: 1px solid #2ecc71 !important;
-            color: #2ecc71 !important;
-        }
-
-        .error-message {
-            background: #ffebee !important;
-            color: #b71c1c !important;
-            border: 1px solid #ffcdd2 !important;
-        }
-
-        .input-area {
-            padding: 1rem;
-            background: #1a1a2e;
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        input[type="text"] {
-            flex: 1;
-            padding: 0.8rem;
-            border: none;
-            border-radius: 8px;
-            background: #16213e;
-            color: #fff;
-            font-size: 1rem;
-        }
-
-        button {
-            padding: 0.8rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            background: var(--primary);
-            color: #fff;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        button:hover {
-            opacity: 0.9;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <!-- Viewport cho thiết bị di động -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BOT-FIVE-MODELS</title>
+  
+  <!-- Favicon cỏ 4 lá -->
+  <link rel="icon" type="image/svg+xml" 
+    href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjMmVjYzcxIiBkPSJNMzcwLjIgNjcuNmMtMjQuMSAwLTQ2LjUgOS40LTYzLjYgMjYuNWwtNDIuMSA0Mi4xYy00LjUgNC41LTEwLjYgNy0xNyA3cy0xMi41LTIuNS0xNy03bC00Mi4xLTQyLjFjLTE3LjEtMTcuMS0zOS41LTI2LjUtNjMuNi0yNi41LTQ5LjYgMC05MCA0MC40LTkwIDkwIDAgMjQuMSA5LjQgNDYuNSAyNi41IDYzLjZsNDIuMSA0Mi4xYyA0LjUgNC41IDcgMTAuNiA3IDE3cy0yLjUgMTIuNS03IDE3bC00Mi4xIDQyLjFjLTE3LjEgMTcuMS0yNi41IDM5LjUtMjYuNSA2My42IDAgNDkuNiA0MC40IDkwIDkwIDkwIDI0LjEgMCA0Ni41LTkuNCA2My42LTI2LjVsNDIuMS00Mi4xYzQuNS00LjUgMTAuNi03IDE3LTdzMTIuNSAyLjUgMTcgN2w0Mi4xIDQyLjFjMTcuMS0xNy4xIDI2LjUtMzkuNSAyNi41LTYzLjYtLjEtNDkuNi00MC41LTkwLTkwLjEtOTB6Ii8+PC9zdmc+">
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Reset & cấu hình cơ bản */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #1a1a2e;
+      color: #eaeaea;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      width: 90%;
+      max-width: 800px;
+      height: 90vh;
+      background: #16213e;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+    }
+    .header {
+      background: linear-gradient(135deg, #0f3460, #1e90ff);
+      padding: 20px;
+      position: relative;
+      text-align: center;
+      color: #fff;
+    }
+    .rainbow-text {
+      font-size: 1.8rem;
+      font-weight: 500;
+      animation: rainbowText 3s linear infinite;
+    }
+    @keyframes rainbowText {
+      0% { color: red; }
+      16% { color: orange; }
+      33% { color: yellow; }
+      50% { color: green; }
+      66% { color: blue; }
+      83% { color: indigo; }
+      100% { color: violet; }
+    }
+    /* Model Menu */
+    .model-menu {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(255,255,255,0.15);
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+    .model-menu:hover {
+      transform: scale(1.05);
+      background: rgba(255,255,255,0.25);
+    }
+    .menu-list {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: #16213e;
+      border: 1px solid #0f3460;
+      border-radius: 8px;
+      margin-top: 8px;
+      min-width: 180px;
+      z-index: 10;
+      opacity: 1;
+    }
+    .menu-list.active {
+      display: block;
+    }
+    .menu-list div {
+      padding: 10px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      animation: rainbow 3s linear infinite;
+    }
+    .menu-list div:hover {
+      background: #0f3460;
+    }
+    @keyframes rainbow {
+      0% { color: red; }
+      16% { color: orange; }
+      33% { color: yellow; }
+      50% { color: green; }
+      66% { color: blue; }
+      83% { color: indigo; }
+      100% { color: violet; }
+    }
+    .chat-area {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background: #0f3460;
+    }
+    .input-area {
+      display: flex;
+      padding: 20px;
+      background: #1a1a2e;
+      border-top: 1px solid #0f3460;
+    }
+    .input-area input[type="text"] {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      background: #16213e;
+      color: #eaeaea;
+    }
+    .input-area button {
+      margin-left: 12px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      background: #1e90ff;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .input-area button:hover {
+      background: #187bcd;
+    }
+    .message {
+      margin-bottom: 15px;
+      animation: fadeIn 0.3s ease;
+    }
+    .message.user {
+      text-align: right;
+    }
+    .message.assistant {
+      text-align: left;
+    }
+    .message p {
+      display: inline-block;
+      padding: 12px;
+      border-radius: 8px;
+      max-width: 75%;
+    }
+    .message.user p {
+      background: #1e90ff;
+      color: #fff;
+    }
+    .message.assistant p {
+      background: #eaeaea;
+      color: #333;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (max-width: 600px) {
+      .container { margin: 10px; }
+      .header h2 { font-size: 1.5rem; }
+      .chat-area { padding: 15px; }
+      .input-area { padding: 15px; }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="model-selector">
-                <select id="modelSelect" onchange="setModel(this.value)">
-                    {% for key, model in models.items() %}
-                    <option value="{{ key }}" {{ 'selected' if key == session.model }}>
-                        {{ model.name }}
-                    </option>
-                    {% endfor %}
-                </select>
-            </div>
-            <h2>Multi-Model AI Chat</h2>
+  <div class="container">
+    <div class="header">
+      <div class="model-menu" id="model-menu">
+        Model: <span id="current-model">{{ current_model }}</span>
+        <div class="menu-list" id="menu-list">
+          {% for key, model in models.items() %}
+          <div onclick="setModel('{{ key }}')">{{ model.name }}</div>
+          {% endfor %}
         </div>
-
-        <div class="chat-area" id="chatArea"></div>
-
-        <div class="input-area">
-            <input type="text" id="userInput" placeholder="Type your message..." />
-            <button onclick="sendMessage()">Send</button>
-        </div>
+      </div>
+      <h2 class="rainbow-text">BOT-FIVE-MODELS</h2>
     </div>
-
-    <script>
-        const chatArea = document.getElementById('chatArea');
-        const userInput = document.getElementById('userInput');
-        const modelSelect = document.getElementById('modelSelect');
-
-        function appendMessage(role, text, type = 'normal') {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${role}`;
-            
-            const p = document.createElement('p');
-            p.textContent = text;
-            
-            if(type === 'reasoning') p.classList.add('reasoning');
-            if(type === 'error') p.classList.add('error-message');
-            
-            messageDiv.appendChild(p);
-            chatArea.appendChild(messageDiv);
-            chatArea.scrollTop = chatArea.scrollHeight;
+    
+    <div class="chat-area" id="chat-area">
+      <!-- Tin nhắn sẽ hiển thị tại đây -->
+    </div>
+    
+    <div class="input-area">
+      <input type="text" id="user-input" placeholder="Type your message..." autocomplete="off" />
+      <button onclick="sendMessage()">Gửi</button>
+    </div>
+  </div>
+  
+  <script>
+    const modelMenu = document.getElementById("model-menu");
+    const menuList = document.getElementById("menu-list");
+    let menuOpen = false;
+    modelMenu.addEventListener("click", (e) => {
+      e.stopPropagation();
+      menuOpen = !menuOpen;
+      if (menuOpen) { menuList.classList.add("active"); }
+      else { menuList.classList.remove("active"); }
+    });
+    document.addEventListener("click", () => {
+      menuList.classList.remove("active");
+      menuOpen = false;
+    });
+    
+    function appendMessage(role, text, subtype = null) {
+      const chatArea = document.getElementById("chat-area");
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("message", role);
+      const p = document.createElement("p");
+      if(subtype === "reasoning"){ p.classList.add("reasoning-box"); }
+      else if(subtype === "final"){ p.classList.add("final-answer"); }
+      p.textContent = text;
+      msgDiv.appendChild(p);
+      chatArea.appendChild(msgDiv);
+      chatArea.scrollTop = chatArea.scrollHeight;
+    }
+    
+    function showLoading() {
+      const chatArea = document.getElementById("chat-area");
+      const loadingDiv = document.createElement("div");
+      loadingDiv.classList.add("message", "assistant");
+      loadingDiv.id = "loading-indicator";
+      const loadingHTML = '<div class="loading-indicator"><span></span><span></span><span></span></div>';
+      loadingDiv.innerHTML = loadingHTML;
+      chatArea.appendChild(loadingDiv);
+      chatArea.scrollTop = chatArea.scrollHeight;
+    }
+    
+    function removeLoading() {
+      const loadingDiv = document.getElementById("loading-indicator");
+      if(loadingDiv) { loadingDiv.remove(); }
+    }
+    
+    function sendMessage() {
+      const input = document.getElementById("user-input");
+      const message = input.value.trim();
+      if(message === "") return;
+      appendMessage("user", message);
+      input.value = "";
+      showLoading();
+      
+      fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: message })
+      })
+      .then(response => response.json())
+      .then(data => {
+        removeLoading();
+        if(data.final_answer) {
+          if(data.reasoning) {
+            appendMessage("assistant", data.reasoning, "reasoning");
+            appendMessage("assistant", data.final_answer, "final");
+          } else {
+            appendMessage("assistant", data.final_answer);
+          }
+        } else if(data.error) {
+          appendMessage("assistant", "Error: " + data.error);
         }
-
-        async function sendMessage() {
-            const message = userInput.value.trim();
-            if(!message) return;
-
-            // Clear input
-            userInput.value = '';
-            appendMessage('user', message);
-
-            try {
-                const response = await fetch('/chat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ message })
-                });
-
-                const contentType = response.headers.get('content-type');
-                let data;
-
-                if(contentType?.includes('application/json')) {
-                    data = await response.json();
-                } else {
-                    const text = await response.text();
-                    throw new Error(`Invalid response: ${text.slice(0, 100)}`);
-                }
-
-                if(!response.ok) {
-                    throw new Error(data.error || `HTTP error ${response.status}`);
-                }
-
-                if(data.reasoning) {
-                    appendMessage('assistant', data.reasoning, 'reasoning');
-                }
-                appendMessage('assistant', data.final_answer);
-
-            } catch (error) {
-                appendMessage('assistant', `Error: ${error.message}`, 'error');
-            }
+      })
+      .catch(error => {
+        removeLoading();
+        appendMessage("assistant", "Error: " + error);
+      });
+    }
+    
+    function setModel(modelKey) {
+      fetch("/set_model", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "model=" + modelKey
+      })
+      .then(response => response.json())
+      .then(data => {
+        if(data.status === "success") {
+          document.getElementById("current-model").textContent = data.model_name;
+          document.getElementById("chat-area").innerHTML = "";
+          document.getElementById("menu-list").classList.remove("active");
+          menuOpen = false;
         }
-
-        async function setModel(modelKey) {
-            try {
-                const response = await fetch('/set_model', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `model=${modelKey}`
-                });
-
-                if(!response.ok) {
-                    throw new Error('Failed to switch model');
-                }
-
-                chatArea.innerHTML = '';
-                
-            } catch (error) {
-                alert(error.message);
-                modelSelect.value = session.model;
-            }
-        }
-
-        // Enter key handler
-        userInput.addEventListener('keypress', (e) => {
-            if(e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
-        });
-    </script>
+      })
+      .catch(error => console.error("Error setting model:", error));
+    }
+  </script>
 </body>
 </html>
